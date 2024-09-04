@@ -15,9 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('reseller_id')->constrained('reseller')->onDelete('cascade');
             $table->date('tanggal');
-            $table->string('bandwith');
+            $table->string('bandwith', length:10);
             $table->string('keterangan')->nullable();
-            $table->integer('nominal');
+            $table->integer('spare');
+            $table->integer('tunggakan');
+            $table->integer('total_tagihan');
+            $table->integer('total_pembayaran');
+            $table->integer('harga_bw');
+            $table->integer('biaya_aktivasi')->nullable();
             $table->timestamps();
         });
 
