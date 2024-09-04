@@ -89,7 +89,7 @@
                                                             <input type="text" class="form-control" id="tunggakan_format" onkeyup="formatRupiah(this)" required value="Rp {{ number_format($reseller->tunggakan, 0, ',', '.') }}">
                                                             
                                                             <!-- Input yang akan disimpan ke database (hidden) -->
-                                                            <input type="number" class="form-control" id="tunggakan" name="tunggakan" hidden value="{{ $reseller->nohp }}">
+                                                            <input type="number" class="form-control" id="tunggakan" name="tunggakan" value="{{ $reseller->tunggakan }}" hidden>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="area">Area</label>
@@ -156,7 +156,7 @@
                             <input type="text" class="form-control" id="tunggakan_format" onkeyup="formatRupiah(this)" required>
                             
                             <!-- Input yang akan disimpan ke database (hidden) -->
-                            <input type="number" class="form-control" id="tunggakan" name="tunggakan" hidden>
+                            <input type="number" class="form-control" id="tunggakan_tambah" name="tunggakan" hidden>
                         </div>
                         <div class="form-group">
                             <label for="area">Area</label>
@@ -227,6 +227,7 @@
 
         // Update nilai yang akan disimpan ke dalam hidden input
         document.getElementById('tunggakan').value = angka.replace(/\./g, '');
+        document.getElementById('tunggakan_tambah').value = angka.replace(/\./g, '');
     }
 </script>
 
