@@ -19,7 +19,7 @@ class ResellerController extends Controller
             'nama' => 'required',
             'alamat' => 'required',
             'nohp' => 'required',
-            'tunggakan' => 'required',
+            'tunggakan' => 'required|numeric',
             'area' => 'required',
         ]);
 
@@ -34,7 +34,7 @@ class ResellerController extends Controller
             'nama' => 'required',
             'alamat' => 'required',
             'nohp' => 'required',
-            'tunggakan' => 'required',
+            'tunggakan' => 'required|numeric',
             'area' => 'required',
         ]);
 
