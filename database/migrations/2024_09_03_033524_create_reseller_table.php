@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('reseller', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('spare');
-            $table->string('nohp');
+            $table->string('nama', length: 50);
+            $table->string('alamat', length: 100);
+            $table->bigInteger('nohp');
+            $table->integer('tunggakan');
+            $table->string('area', length: 20);
             $table->timestamps();
         });
     }
