@@ -47,8 +47,8 @@
                 </li>
                 
                 <!-- Pembayaran Section -->
-                <li class="sidebar-item {{ Request::is('pembayaran*') ? 'active' : '' }}">
-                    <a href="/pembayaran" class='sidebar-link'>
+                <li class="sidebar-item {{ Request::is('transaksi*') ? 'active' : '' }}">
+                    <a href="/transaksi" class='sidebar-link'>
                         <i class="bi bi-wallet2"></i>
                         <span>Pembayaran</span>
                     </a>
