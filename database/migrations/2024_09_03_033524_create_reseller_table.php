@@ -18,6 +18,21 @@ return new class extends Migration
             $table->bigInteger('nohp');
             $table->integer('tunggakan');
             $table->string('area', length: 20);
+            $table->string('bandwith', length:10)->nullable();
+            // OLT details
+            $table->string('olt_sn', 50)->nullable();
+            $table->string('olt_type_modem', 50)->nullable();
+            $table->string('olt_lokasi_pop', 100)->nullable();
+            $table->string('olt_secret', 50)->nullable();
+            $table->string('olt_ip_address', 45)->nullable();
+            $table->enum('olt_statik', ['PRIVATE', 'PUBLIC'])->nullable();
+            
+            // Switch details
+            $table->string('switch_type_sfp', 50)->nullable();
+            $table->string('switch_sn_sfp', 50)->nullable();
+            $table->string('switch_lokasi_pop', 100)->nullable();
+            $table->integer('switch_port_number')->nullable();
+            $table->enum('switch_statik', ['PRIVATE', 'PUBLIC'])->nullable();
             $table->timestamps();
         });
     }

@@ -49,7 +49,11 @@ class TransaksiController extends Controller
             $reseller->tunggakan = 0;
             $reseller->save();
         }
-    
+        // menambahkan transaksi bw trakhir ke reseller
+        $reseller = Reseller::find($resellerId);
+        $reseller->bandwith = $validatedData['bandwith'];
+        $reseller->save();
+        // Redirect ke halaman reseller
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan!');
     }
     

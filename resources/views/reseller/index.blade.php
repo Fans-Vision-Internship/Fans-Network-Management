@@ -2,6 +2,12 @@
 
 @section('contents')
 @include('layouts.sidebar')
+<style>
+    .modal-dialog-scrollable .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+</style>
 <div id="main">
     <header class="mb-3">
         <a href="#" class="burger-btn d-block d-xl-none">
@@ -36,6 +42,7 @@
                                 <th>No HP</th>
                                 <th>Tunggakan</th>
                                 <th>Area</th>
+                                <th>Bandwith</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -48,6 +55,7 @@
                                 <td>{{ $reseller->nohp }}</td>
                                 <td>Rp {{ number_format($reseller->tunggakan, 0, ',', '.') }}</td>
                                 <td>{{ $reseller->area }}</td>
+                                <td>{{ $reseller->bandwith }} Mbps</td>
                                 <td>
                                     <!-- Tombol Edit Reseller -->
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal"
@@ -95,7 +103,73 @@
                                                             <label for="area">Area</label>
                                                             <input type="text" class="form-control" id="area" name="area" required value="{{ $reseller->area }}">
                                                         </div>
+                                                        <div class="form-group">
+                                                            <label for="device_type{{ $reseller->id }}">Pilih Jenis Perangkat</label>
+                                                            <select class="form-select" id="device_type{{ $reseller->id }}" name="device_type" onchange="toggleDeviceInputs({{ $reseller->id }})">
+                                                                <option value="olt" {{ $reseller->olt_sn ? 'selected' : '' }}>OLT</option>
+                                                                <option value="switch" {{ $reseller->switch_type_sfp ? 'selected' : '' }}>Switch</option>
+                                                            </select>
+                                                        </div>
+                                                        
+                                                        <!-- OLT Fields -->
+                                                        <div id="olt_inputs{{ $reseller->id }}" style="display: {{ $reseller->olt_sn ? 'block' : 'none' }};">
+                                                            <div class="form-group">
+                                                                <label for="olt_sn">OLT SN</label>
+                                                                <input type="text" class="form-control" id="olt_sn" name="olt_sn" value="{{ $reseller->olt_sn }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="olt_type_modem">OLT Type Modem</label>
+                                                                <input type="text" class="form-control" id="olt_type_modem" name="olt_type_modem" value="{{ $reseller->olt_type_modem }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="olt_lokasi_pop">OLT Lokasi POP</label>
+                                                                <input type="text" class="form-control" id="olt_lokasi_pop" name="olt_lokasi_pop" value="{{ $reseller->olt_lokasi_pop }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="olt_secret">Secret</label>
+                                                                <input type="text" class="form-control" id="olt_secret" name="olt_secret" value="{{ $reseller->olt_secret }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="olt_ip_address">OLT IP Address</label>
+                                                                <input type="text" class="form-control" id="olt_ip_address" name="olt_ip_address" value="{{ $reseller->olt_ip_address }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="olt_statik">OLT Statik</label>
+                                                                <select class="form-select" id="olt_statik" name="olt_statik">
+                                                                    <option value="private" {{ $reseller->olt_statik == 'private' ? 'selected' : '' }}>Private</option>
+                                                                    <option value="public" {{ $reseller->olt_statik == 'public' ? 'selected' : '' }}>Public</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <!-- Switch Fields -->
+                                                        <div id="switch_inputs{{ $reseller->id }}" style="display: {{ $reseller->switch_type_sfp ? 'block' : 'none' }};">
+                                                            <div class="form-group">
+                                                                <label for="switch_type_sfp">Switch Type SFP</label>
+                                                                <input type="text" class="form-control" id="switch_type_sfp" name="switch_type_sfp" value="{{ $reseller->switch_type_sfp }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="switch_sn_sfp">Switch SN SFP</label>
+                                                                <input type="text" class="form-control" id="switch_sn_sfp" name="switch_sn_sfp" value="{{ $reseller->switch_sn_sfp }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="switch_lokasi_pop">Switch Lokasi POP</label>
+                                                                <input type="text" class="form-control" id="switch_lokasi_pop" name="switch_lokasi_pop" value="{{ $reseller->switch_lokasi_pop }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="switch_port_number">Switch Port Number</label>
+                                                                <input type="number" class="form-control" id="switch_port_number" name="switch_port_number" value="{{ $reseller->switch_port_number }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="switch_statik">Switch Statik</label>
+                                                                <select class="form-select" id="switch_statik" name="switch_statik">
+                                                                    <option value="private" {{ $reseller->switch_statik == 'private' ? 'selected' : '' }}>Private</option>
+                                                                    <option value="public" {{ $reseller->switch_statik == 'public' ? 'selected' : '' }}>Public</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
                                                     </div>
+                                                    
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                                                         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
@@ -162,7 +236,73 @@
                             <label for="area">Area</label>
                             <input type="text" class="form-control" id="area" name="area" required>
                         </div>
+                        <div class="form-group">
+                            <label for="device_type">Pilih Jenis Perangkat</label>
+                            <select class="form-select" id="device_type" name="device_type" onchange="toggleDeviceInputsAdd()">
+                                <option value="olt">OLT</option>
+                                <option value="switch">Switch</option>
+                            </select>
+                        </div>
+                        
+                        <!-- OLT Fields -->
+                        <div id="olt_inputs_add" >
+                            <div class="form-group">
+                                <label for="olt_sn">OLT SN</label>
+                                <input type="text" class="form-control" id="olt_sn" name="olt_sn">
+                            </div>
+                            <div class="form-group">
+                                <label for="olt_type_modem">OLT Type Modem</label>
+                                <input type="text" class="form-control" id="olt_type_modem" name="olt_type_modem">
+                            </div>
+                            <div class="form-group">
+                                <label for="olt_lokasi_pop">OLT Lokasi POP</label>
+                                <input type="text" class="form-control" id="olt_lokasi_pop" name="olt_lokasi_pop">
+                            </div>
+                            <div class="form-group">
+                                <label for="olt_secret">Secret</label>
+                                <input type="text" class="form-control" id="olt_secret" name="olt_secret">
+                            </div>
+                            <div class="form-group">
+                                <label for="olt_ip_address">OLT IP Address</label>
+                                <input type="text" class="form-control" id="olt_ip_address" name="olt_ip_address">
+                            </div>
+                            <div class="form-group">
+                                <label for="olt_statik">OLT Statik</label>
+                                <select class="form-select" id="olt_statik" name="olt_statik">
+                                    <option value="private">Private</option>
+                                    <option value="public">Public</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Switch Fields -->
+                        <div id="switch_inputs_add" style="display: none;">
+                            <div class="form-group">
+                                <label for="switch_type_sfp">Switch Type SFP</label>
+                                <input type="text" class="form-control" id="switch_type_sfp" name="switch_type_sfp">
+                            </div>
+                            <div class="form-group">
+                                <label for="switch_sn_sfp">Switch SN SFP</label>
+                                <input type="text" class="form-control" id="switch_sn_sfp" name="switch_sn_sfp">
+                            </div>
+                            <div class="form-group">
+                                <label for="switch_lokasi_pop">Switch Lokasi POP</label>
+                                <input type="text" class="form-control" id="switch_lokasi_pop" name="switch_lokasi_pop">
+                            </div>
+                            <div class="form-group">
+                                <label for="switch_port_number">Switch Port Number</label>
+                                <input type="number" class="form-control" id="switch_port_number" name="switch_port_number">
+                            </div>
+                            <div class="form-group">
+                                <label for="switch_statik">Switch Statik</label>
+                                <select class="form-select" id="switch_statik" name="switch_statik">
+                                    <option value="private">Private</option>
+                                    <option value="public">Public</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
+                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -229,6 +369,34 @@
         document.getElementById('tunggakan_tambah').value = angka.replace(/\./g, '');
         document.getElementById('tunggakan').value = angka.replace(/\./g, '');
     }
+</script>
+<script>
+    function toggleDeviceInputs(id) {
+    const deviceType = document.getElementById('device_type' + id).value;
+    const oltInputs = document.getElementById('olt_inputs' + id);
+    const switchInputs = document.getElementById('switch_inputs' + id);
+
+    if (deviceType === 'olt') {
+        oltInputs.style.display = 'block';
+        switchInputs.style.display = 'none';
+    } else if (deviceType === 'switch') {
+        oltInputs.style.display = 'none';
+        switchInputs.style.display = 'block';
+    }
+}
+function toggleDeviceInputsAdd() {
+    const deviceType = document.getElementById('device_type').value;
+    const oltInputs = document.getElementById('olt_inputs_add');
+    const switchInputs = document.getElementById('switch_inputs_add');
+
+    if (deviceType === 'olt') {
+        oltInputs.style.display = 'block';
+        switchInputs.style.display = 'none';
+    } else if (deviceType === 'switch') {
+        oltInputs.style.display = 'none';
+        switchInputs.style.display = 'block';
+    }
+}
 </script>
 
 
