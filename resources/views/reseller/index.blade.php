@@ -27,42 +27,74 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Data Reseller</h5>
-                    <button type="button" class="btn btn-primary btn-icon-text" data-bs-toggle="modal"
-                        data-bs-target="#modalTambahReseller">
+                    <button type="button" class="btn btn-primary btn-icon-text" data-bs-toggle="modal" data-bs-target="#modalTambahReseller">
                         <i class="bi bi-plus-circle-fill me-2"></i> Tambah Reseller
                     </button>
                 </div>
                 <div class="card-body">
+                    <div class="d-flex justify-content-start mb-3">
+                        <form method="GET" action="{{ route('reseller.index') }}">
+                            <label for="filter" class="me-2">Filter Status: </label>
+                            <select name="filter" id="filter" onchange="this.form.submit()"  class="form-select">
+                                <option value="" {{ $filter == '' ? 'selected' : '' }}>Semua</option>
+                                <option value="aktif" {{ $filter == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                <option value="nonaktif" {{ $filter == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                            </select>
+                        </form>
+                    </div>
                     <table class="table table-striped" id="table1">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Nama</th>
-                                <th>alamat</th>
+                                <th>Alamat</th>
                                 <th>No HP</th>
-                                <th>Tunggakan</th>
+                                @if(Auth::user()->role == 1)
+                                    <th>Tunggakan</th>
+                                @endif
                                 <th>Area</th>
                                 <th>Bandwith</th>
+                                @if(Auth::user()->role == 1)
+                                <th>Tanggal Transaksi</th>
+                                @endif
+                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($resellers as $reseller)
-                            <tr>
+                            <tr @if($reseller->status == 'nonaktif') class="table-danger" @endif>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $reseller->nama }}</td>
                                 <td>{{ $reseller->alamat }}</td>
                                 <td>{{ $reseller->nohp }}</td>
-                                <td>Rp {{ number_format($reseller->tunggakan, 0, ',', '.') }}</td>
+                                @if(Auth::user()->role == 1)
+                                    <td>Rp {{ number_format($reseller->tunggakan, 0, ',', '.') }}</td>
+                                @endif
                                 <td>{{ $reseller->area }}</td>
                                 <td>{{ $reseller->bandwith }} Mbps</td>
+                                @if(Auth::user()->role == 1)
+                                <td>{{ optional($reseller->pembayaran->last())->tanggal }}</td>
+                                @endif
+                                <td>{{ ucfirst($reseller->status) }}</td>
                                 <td>
                                     <!-- Tombol Edit Reseller -->
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                         data-bs-target="#modalEditReseller{{ $reseller->id }}">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
-                                    
+                                    @if(Auth::user()->role == 1)
+                                    <form action="{{ route('reseller.toggleStatus', $reseller->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary">
+                                            @if($reseller->status == 'aktif')
+                                                <i class="bi bi-x-circle-fill"></i> <!-- Ikon untuk Nonaktifkan -->
+                                            @else
+                                                <i class="bi bi-check-circle-fill"></i> <!-- Ikon untuk Aktifkan -->
+                                            @endif
+                                        </button>
+                                    </form>
+                                    @endif
                                     <!-- Modal Edit Reseller -->
                                     <div class="modal fade text-left" id="modalEditReseller{{ $reseller->id }}" tabindex="-1" role="dialog"
                                         aria-labelledby="modalEditResellerLabel" aria-hidden="true">
@@ -91,7 +123,7 @@
                                                             <label for="nohp">No HP</label>
                                                             <input type="number" class="form-control" id="nohp" name="nohp" required value="{{ $reseller->nohp }}">
                                                         </div>
-                                                        <div class="form-group">
+                                                        <div class="form-group" style="display: {{ Auth::user()->role == 1 ? 'block' : 'none' }};">
                                                             <label for="tunggakan">Tunggakan</label>
                                                             <!-- Input tampilan dengan format Rupiah -->
                                                             <input type="text" class="form-control" id="tunggakan_format" onkeyup="formatRupiah(this)" required value="Rp {{ number_format($reseller->tunggakan, 0, ',', '.') }}" readonly>
@@ -103,9 +135,11 @@
                                                             <label for="area">Area</label>
                                                             <input type="text" class="form-control" id="area" name="area" required value="{{ $reseller->area }}">
                                                         </div>
+                                                        @if(Auth::user()->role == 2)
                                                         <div class="form-group">
                                                             <label for="device_type{{ $reseller->id }}">Pilih Jenis Perangkat</label>
                                                             <select class="form-select" id="device_type{{ $reseller->id }}" name="device_type" onchange="toggleDeviceInputs({{ $reseller->id }})">
+                                                                <option value="" >Pilih Perangkat</option>
                                                                 <option value="olt" {{ $reseller->olt_sn ? 'selected' : '' }}>OLT</option>
                                                                 <option value="switch" {{ $reseller->switch_type_sfp ? 'selected' : '' }}>Switch</option>
                                                             </select>
@@ -168,6 +202,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
+                                                        @endif
                                                     </div>
                                                     
                                                     <div class="modal-footer">
@@ -179,6 +214,7 @@
                                         </div>
                                     </div>
 
+                                    @if(Auth::user()->role == 1)
                                     <!-- Tombol Hapus Reseller -->
                                     <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ route('reseller.destroy', $reseller->id) }}')">
                                         <i class="bi bi-trash"></i>
@@ -187,6 +223,7 @@
                                     <a href="https://api.whatsapp.com/send?phone=62{{ $reseller->nohp }}&text=Halo" target="_blank" class="btn btn-success">
                                         <i class="bi bi-whatsapp"></i>
                                     </a>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -224,18 +261,19 @@
                             <label for="nohp">No HP</label>
                             <input type="number" class="form-control" id="nohp" name="nohp" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="display: {{ Auth::user()->role == 1 ? 'block' : 'none' }};">
                             <label for="tunggakan">Tunggakan</label>
                             <!-- Input tampilan dengan format Rupiah -->
-                            <input type="text" class="form-control" id="tunggakan_format" onkeyup="formatRupiah(this)" required>
+                            <input type="text" class="form-control" id="tunggakan_format" onkeyup="formatRupiah(this)" {{ Auth::user()->role == 1 ? 'required' : '' }}>
                             
                             <!-- Input yang akan disimpan ke database (hidden) -->
-                            <input type="number" class="form-control" id="tunggakan_tambah" name="tunggakan" hidden >
+                            <input type="number" class="form-control" id="tunggakan_tambah" name="tunggakan" hidden value="0">
                         </div>
                         <div class="form-group">
                             <label for="area">Area</label>
                             <input type="text" class="form-control" id="area" name="area" required>
                         </div>
+                        @if(Auth::user()->role == 2)
                         <div class="form-group">
                             <label for="device_type">Pilih Jenis Perangkat</label>
                             <select class="form-select" id="device_type" name="device_type" onchange="toggleDeviceInputsAdd()">
@@ -301,6 +339,7 @@
                                 </select>
                             </div>
                         </div>
+                        @endif
                     </div>
                     
                     <div class="modal-footer">
@@ -322,10 +361,22 @@
             title: 'Berhasil!',
             text: "{{ session('success') }}",
             icon: 'success',
+            showConfirmButton: false,
+            timer: 1500
+        });
+        @endif
+        @if ($errors->any())
+        Swal.fire({
+            title: 'Kesalahan!',
+            html: `
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            `,
+            icon: 'error',
             confirmButtonText: 'OK'
         });
         @endif
-
         // Konfirmasi penghapusan reseller dengan SweetAlert
         function confirmDelete(url) {
             Swal.fire({

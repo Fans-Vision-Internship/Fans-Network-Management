@@ -29,7 +29,7 @@ class LoginController extends Controller
             return redirect('home');
         }else{
             FacadesSession::flash('error', 'Email atau Password Salah');
-            return redirect('/');
+            return redirect()->back()->with('error', 'Email atau password salah.');
         }
     }
 
