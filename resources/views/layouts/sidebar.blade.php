@@ -32,12 +32,14 @@
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
+                @if(Auth::user()->role == 1)
                 <li class="sidebar-item {{ Request::is('user*') ? 'active' : '' }}">
                     <a href="/users" class='sidebar-link'>
                         <i class="bi bi-person-lines-fill"></i>
                         <span>User Management</span>
                     </a>
                 </li>
+                @endif
                 <!-- Data Reseller Section -->
                 <li class="sidebar-item {{ Request::is('reseller*') ? 'active' : '' }}">
                     <a href="/reseller" class='sidebar-link'>
@@ -45,7 +47,7 @@
                         <span>Data Reseller</span>
                     </a>
                 </li>
-                
+                @if(Auth::user()->role == 1)
                 <!-- Pembayaran Section -->
                 <li class="sidebar-item {{ Request::is('transaksi*') ? 'active' : '' }}">
                     <a href="/transaksi" class='sidebar-link'>
@@ -61,7 +63,7 @@
                         <span>Laporan Pembayaran</span>
                     </a>
                 </li>
-
+                @endif
                 <!-- Logout -->
                 <li class="sidebar-item">
                     <form id="logout-form" action="/actionlogout" method="post" class='sidebar-link'>

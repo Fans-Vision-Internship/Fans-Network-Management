@@ -33,6 +33,7 @@
                                 <th>ID</th>
                                 <th>Nama</th>
                                 <th>Email</th>
+                                <th>Role</th> <!-- Tambahkan kolom role -->
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -42,6 +43,7 @@
                                 <td>{{ $user->id }}</td>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
+                                <td>{{ $user->role == 1 ? 'Admin' : 'NOC' }}</td> <!-- Tampilkan role -->
                                 <td>
                                     <!-- Tombol Edit User -->
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal"
@@ -77,12 +79,20 @@
                                                             <label for="password">Password (Kosongkan jika tidak diubah)</label>
                                                             <input type="password" class="form-control" id="password{{ $user->id }}" name="password">
                                                         </div>
+                                                        <div class="form-group">
+                                                            <label for="role">Role</label>
+                                                            <select class="form-select" id="role" name="role" required>
+                                                                <option value="1" {{ $user->role == 1 ? 'selected' : '' }}>Admin</option>
+                                                                <option value="2" {{ $user->role == 2 ? 'selected' : '' }}>NOC</option> <!-- Dropdown untuk role -->
+                                                            </select>
+                                                        </div>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                                                         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                                     </div>
                                                 </form>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -127,12 +137,20 @@
                             <label for="password">Password</label>
                             <input type="password" class="form-control" id="password" name="password" required>
                         </div>
+                        <div class="form-group">
+                            <label for="role">Role</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="1">Admin</option>
+                                <option value="2">NOC</option> <!-- Tambahkan dropdown untuk role -->
+                            </select>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
+                
             </div>
         </div>
     </div>
@@ -176,7 +194,8 @@
             title: 'Berhasil!',
             text: "{{ session('success') }}",
             icon: 'success',
-            confirmButtonText: 'OK'
+            showConfirmButton: false,
+            timer: 1500
         });
         @endif
         // Validasi form Edit User

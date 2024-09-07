@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('tunggakan');
             $table->string('area', length: 20);
             $table->string('bandwith', length:10)->nullable();
+            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif'); 
             // OLT details
             $table->string('olt_sn', 50)->nullable();
             $table->string('olt_type_modem', 50)->nullable();

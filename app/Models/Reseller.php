@@ -19,6 +19,7 @@ class Reseller extends Model
         'tunggakan',
         'area',
         'bandwith',
+        'status',
         'olt_sn',
         'olt_type_modem',
         'olt_lokasi_pop',
@@ -46,5 +47,25 @@ class Reseller extends Model
     public function pembayaran()
     {
         return $this->hasMany(Pembayaran::class);
+    }
+    // Scope untuk reseller yang sudah transaksi bulan ini
+    public function scopeTransaksiBulanIni($query)
+    {
+        return $query->whereHas('pembayaran', function ($q) {
+            $q->whereMonth('tanggal', Carbon::now()->month)
+              ->whereYear('tanggal', Carbon::now()->year);
+        });
+    }
+
+    // Scope untuk reseller aktif
+    public function scopeAktif($query)
+    {
+        return $query->where('status', 'aktif');
+    }
+
+    // Scope untuk reseller nonaktif
+    public function scopeNonaktif($query)
+    {
+        return $query->where('status', 'nonaktif');
     }
 }
