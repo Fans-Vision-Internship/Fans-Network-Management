@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reseller;
 use App\Models\Pembayaran;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class TransaksiController extends Controller
@@ -22,7 +23,7 @@ class TransaksiController extends Controller
             'tanggal' => 'required|date',
             'bandwith' => 'required|numeric',
             'keterangan' => 'nullable|string',
-            'spare' => 'required|numeric',
+            'spare' => 'nullable|numeric',
             'tunggakan' => 'required|numeric',
             'total_tagihan' => 'required|numeric',
             'total_pembayaran' => 'required|numeric',
@@ -55,6 +56,33 @@ class TransaksiController extends Controller
         $reseller->save();
         // Redirect ke halaman reseller
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan!');
+    }
+    public function generateInvoice($resellerId)
+    {
+        $reseller = Reseller::find($resellerId);
+        $pembayaran = Pembayaran::where('reseller_id', $resellerId)->latest()->first();
+
+        // Calculate the total
+        $total_tagihan = $pembayaran->harga_bw + $pembayaran->tunggakan + $pembayaran->biaya_aktivasi;
+
+        // Data to be passed to the view
+        $data = [
+            'reseller' => $reseller,
+            'tanggal' => $pembayaran->tanggal,
+            'invoiceNo' => rand(1000, 9999),  // Generate a random invoice number
+            'jatuhTempo' => now()->addDays(30)->format('d M Y'),
+            'bandwith' => $pembayaran->bandwith,
+            'harga_bw' => $pembayaran->harga_bw,
+            'tunggakan' => $pembayaran->tunggakan,
+            'biaya_aktivasi' => $pembayaran->biaya_aktivasi,
+            'total_tagihan' => $total_tagihan
+        ];
+
+        // Load view into the PDF
+        $pdf = Pdf::loadView('invoice', $data);
+
+        // Download the PDF
+        return $pdf->download('invoice.pdf');
     }
     
 }

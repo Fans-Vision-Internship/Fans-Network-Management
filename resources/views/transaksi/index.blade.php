@@ -81,7 +81,7 @@
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="spare">Spare</label>
-                                                            <input type="number" class="form-control" id="spare" name="spare" required>
+                                                            <input type="number" class="form-control" id="spare" name="spare">
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="harga_bw">Harga BW</label>
@@ -89,7 +89,7 @@
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="tunggakan">Tunggakan</label>
-                                                            <input type="number" class="form-control" id="tunggakan" name="tunggakan" value="{{ $reseller->tunggakan }}" required oninput="hitungTotalTagihan()">
+                                                            <input type="number" class="form-control" id="tunggakan" name="tunggakan" value="{{ $reseller->tunggakan }}" required oninput="hitungTotalTagihan()" readonly>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="biaya_aktivasi">Biaya Aktivasi</label>
@@ -97,7 +97,7 @@
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="total_tagihan">Total Tagihan</label>
-                                                            <input type="number" class="form-control" id="total_tagihan" name="total_tagihan" required>
+                                                            <input type="number" class="form-control" id="total_tagihan" name="total_tagihan" required readonly>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="total_pembayaran">Total Pembayaran</label>
@@ -107,6 +107,7 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                                                         <button type="submit" class="btn btn-primary">Simpan</button>
+                                                        <a href="{{ route('transaksi.invoice', $reseller->id) }}" class="btn btn-success">Invoice</a>
                                                     </div>
                                                 </form>
                                             </div>
