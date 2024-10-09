@@ -27,6 +27,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export-pembayaran', [PembayaranController::class, 'exportExcel'])->name('export.pembayaran');
         Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
         Route::post('/transaksi/{reseller}', [TransaksiController::class, 'store'])->name('transaksi.store');
+        Route::get('/invoice/{id}', [TransaksiController::class, 'generateInvoice'])->name('transaksi.invoice');
     });
 
     // Rute yang dapat diakses oleh role 1 dan role 2

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('tanggal');
             $table->string('bandwith', length:10);
             $table->string('keterangan')->nullable();
-            $table->integer('spare');
+            $table->integer('spare')->nullable();
             $table->integer('tunggakan');
             $table->integer('total_tagihan');
             $table->integer('total_pembayaran');
