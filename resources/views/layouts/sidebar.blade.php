@@ -48,6 +48,13 @@
                     </a>
                 </li>
                 @if(Auth::user()->role == 1)
+                <!-- Invoice Section -->
+                <li class="sidebar-item {{ Request::is('invoice*') ? 'active' : '' }}">
+                    <a href="/invoice" class='sidebar-link'>
+                        <i class="bi bi-wallet"></i>
+                        <span>Invoice</span>
+                    </a>
+                </li>
                 <!-- Pembayaran Section -->
                 <li class="sidebar-item {{ Request::is('transaksi*') ? 'active' : '' }}">
                     <a href="/transaksi" class='sidebar-link'>
