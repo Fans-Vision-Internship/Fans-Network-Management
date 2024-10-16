@@ -12,7 +12,9 @@ class TransaksiController extends Controller
     public function index()
     {
         // Ambil semua reseller yang belum melakukan transaksi bulan ini
-        $resellers = Reseller::belumTransaksiBulanIni()->get();
+        $resellers = Reseller::where('status', 'Aktif')
+                    ->belumTransaksiBulanIni()
+                    ->get();
 
         return view('transaksi.index', compact('resellers'));
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\ResellerController;
@@ -28,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
         Route::post('/transaksi/{reseller}', [TransaksiController::class, 'store'])->name('transaksi.store');
         Route::get('/invoice/{id}', [TransaksiController::class, 'generateInvoice'])->name('transaksi.invoice');
+        Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
+        Route::post('/invoice/pdf/{id}', [InvoiceController::class, 'generateInvoice'])->name('invoice.generate');
     });
 
     // Rute yang dapat diakses oleh role 1 dan role 2
