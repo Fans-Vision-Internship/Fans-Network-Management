@@ -28,7 +28,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export-pembayaran', [PembayaranController::class, 'exportExcel'])->name('export.pembayaran');
         Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
         Route::post('/transaksi/{reseller}', [TransaksiController::class, 'store'])->name('transaksi.store');
-        Route::get('/invoice/{id}', [TransaksiController::class, 'generateInvoice'])->name('transaksi.invoice');
         Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
         Route::post('/invoice/pdf/{id}', [InvoiceController::class, 'generateInvoice'])->name('invoice.generate');
     });
