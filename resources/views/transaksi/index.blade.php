@@ -107,7 +107,6 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                                                         <button type="submit" class="btn btn-primary">Simpan</button>
-                                                        <a href="{{ route('transaksi.invoice', $reseller->id) }}" class="btn btn-success">Invoice</a>
                                                     </div>
                                                 </form>
                                             </div>

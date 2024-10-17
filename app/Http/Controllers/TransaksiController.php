@@ -20,71 +20,68 @@ class TransaksiController extends Controller
     }
 
     public function store(Request $request, $resellerId)
-    {
-        $validatedData = $request->validate([
-            'tanggal' => 'required|date',
-            'bandwith' => 'required|numeric',
-            'keterangan' => 'nullable|string',
-            'spare' => 'nullable|numeric',
-            'tunggakan' => 'required|numeric',
-            'total_tagihan' => 'required|numeric',
-            'total_pembayaran' => 'required|numeric',
-            'harga_bw' => 'required|numeric',
-            'biaya_aktivasi' => 'required|numeric',
-        ]);
-    
-        $validatedData['reseller_id'] = $resellerId;
-    
-        // Simpan transaksi ke database
-        Pembayaran::create($validatedData);
-    
-        // Update tunggakan reseller jika total tagihan lebih besar dari total pembayaran
-        if ($validatedData['total_tagihan'] > $validatedData['total_pembayaran']) {
-            $selisih = $validatedData['total_tagihan'] - $validatedData['total_pembayaran'];
-            
-            // Perbarui tunggakan pada tabel reseller dengan nilai selisih, bukan menambahkannya
-            $reseller = Reseller::find($resellerId);
-            $reseller->tunggakan = $selisih;
-            $reseller->save();
-        } else {
-            // Jika tidak ada selisih, pastikan tunggakan di reset menjadi 0
-            $reseller = Reseller::find($resellerId);
-            $reseller->tunggakan = 0;
-            $reseller->save();
-        }
-        // menambahkan transaksi bw trakhir ke reseller
-        $reseller = Reseller::find($resellerId);
-        $reseller->bandwith = $validatedData['bandwith'];
-        $reseller->save();
-        // Redirect ke halaman reseller
-        return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan!');
+{
+    $validatedData = $request->validate([
+        'tanggal' => 'required|date',
+        'bandwith' => 'required|numeric',
+        'keterangan' => 'nullable|string',
+        'spare' => 'nullable|numeric',
+        'tunggakan' => 'required|numeric',
+        'total_tagihan' => 'required|numeric',
+        'total_pembayaran' => 'required|numeric',
+        'harga_bw' => 'required|numeric',
+        'biaya_aktivasi' => 'required|numeric',
+    ]);
+
+    $validatedData['reseller_id'] = $resellerId;
+
+    // Simpan transaksi ke database
+    $pembayaran = Pembayaran::create($validatedData);
+
+    // Update tunggakan reseller jika total tagihan lebih besar dari total pembayaran
+    $reseller = Reseller::find($resellerId);
+    if ($validatedData['total_tagihan'] > $validatedData['total_pembayaran']) {
+        $selisih = $validatedData['total_tagihan'] - $validatedData['total_pembayaran'];
+        $reseller->tunggakan = $selisih;
+    } else {
+        $reseller->tunggakan = 0;
     }
-    public function generateInvoice($resellerId)
-    {
-        $reseller = Reseller::find($resellerId);
-        $pembayaran = Pembayaran::where('reseller_id', $resellerId)->latest()->first();
+    $reseller->bandwith = $validatedData['bandwith'];
+    $reseller->save();
 
-        // Calculate the total
-        $total_tagihan = $pembayaran->harga_bw + $pembayaran->tunggakan + $pembayaran->biaya_aktivasi;
+    $totalTransaksi = Pembayaran::count();
+    $nomor_kwitansi = str_pad($totalTransaksi + 1, 6, '0', STR_PAD_LEFT);
+    // Siapkan data untuk PDF
+    $data = [
+        'tanggal' => $validatedData['tanggal'],
+        'nomor_kwitansi' => $nomor_kwitansi, // Anda bisa mengubahnya sesuai kebutuhan
+        'jatuh_tempo' => now()->addMonth()->format('d-m-Y'),
+        'reseller' => $reseller,
+        'bandwith' => $validatedData['bandwith'],
+        'harga' => $validatedData['harga_bw'],
+        'tunggakan' => $validatedData['tunggakan'],
+        'biaya_aktivasi' => $validatedData['biaya_aktivasi'],
+        'sub_total' => $validatedData['total_tagihan'],
+        'terbilang' => $this->terbilang($validatedData['total_tagihan']),
+    ];
 
-        // Data to be passed to the view
-        $data = [
-            'reseller' => $reseller,
-            'tanggal' => $pembayaran->tanggal,
-            'invoiceNo' => rand(1000, 9999),  // Generate a random invoice number
-            'jatuhTempo' => now()->addDays(30)->format('d M Y'),
-            'bandwith' => $pembayaran->bandwith,
-            'harga_bw' => $pembayaran->harga_bw,
-            'tunggakan' => $pembayaran->tunggakan,
-            'biaya_aktivasi' => $pembayaran->biaya_aktivasi,
-            'total_tagihan' => $total_tagihan
-        ];
+    // Generate PDF
+    $pdf = Pdf::loadView('transaksi.pdf_template_kwitansi', $data);
 
-        // Load view into the PDF
-        $pdf = Pdf::loadView('invoice', $data);
+    // Simpan PDF ke server atau tampilkan langsung ke user
+    return $pdf->download('kwitansi_' . $reseller->nama . '.pdf');
 
-        // Download the PDF
-        return $pdf->download('invoice.pdf');
-    }
+    // Redirect ke halaman reseller dengan pesan sukses
+    return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan dan kwitansi dicetak!');
+}
+
+// Fungsi terbilang untuk angka dalam bahasa Indonesia
+private function terbilang($nilai)
+{
+    // Implementasi fungsi terbilang
+    $f = new \NumberFormatter('id', \NumberFormatter::SPELLOUT);
+    return $f->format($nilai);
+}
+
     
 }
