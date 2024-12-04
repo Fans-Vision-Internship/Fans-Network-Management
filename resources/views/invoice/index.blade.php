@@ -83,20 +83,21 @@
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="harga">Harga</label>
-                                                            <input type="number" class="form-control" id="harga" name="harga" required oninput="hitungSubtotal()">
+                                                            <input type="number" class="form-control" id="harga{{ $reseller->id }}" name="harga" required oninput="hitungSubtotal({{ $reseller->id }})">
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="biaya_aktivasi">Biaya Aktivasi</label>
-                                                            <input type="number" class="form-control" id="biaya_aktivasi" name="biaya_aktivasi" required oninput="hitungSubtotal()">
+                                                            <input type="number" class="form-control" id="biaya_aktivasi{{ $reseller->id }}" name="biaya_aktivasi" required oninput="hitungSubtotal({{ $reseller->id }})">
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="tunggakan">Tunggakan</label>
-                                                            <input type="number" class="form-control" id="tunggakan" name="tunggakan" value="{{ $reseller->tunggakan }}" readonly>
+                                                            <input type="number" class="form-control" id="tunggakan{{ $reseller->id }}" name="tunggakan" value="{{ $reseller->tunggakan }}" readonly>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="sub_total">Sub Total</label>
-                                                            <input type="number" class="form-control" id="sub_total" name="sub_total" readonly>
+                                                            <input type="number" class="form-control" id="sub_total{{ $reseller->id }}" name="sub_total" readonly>
                                                         </div>
+                                                        
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -122,14 +123,15 @@
 </div>
 
 <script>
-    function hitungSubtotal() {
-    let harga = parseFloat(document.getElementById('harga').value) || 0;
-    let biayaAktivasi = parseFloat(document.getElementById('biaya_aktivasi').value) || 0;
-    let tunggakan = parseFloat(document.getElementById('tunggakan').value) || 0;
+function hitungSubtotal(resellerId) {
+    let harga = parseFloat(document.getElementById('harga' + resellerId).value) || 0;
+    let biayaAktivasi = parseFloat(document.getElementById('biaya_aktivasi' + resellerId).value) || 0;
+    let tunggakan = parseFloat(document.getElementById('tunggakan' + resellerId).value) || 0;
 
     let subTotal = harga + biayaAktivasi + tunggakan;
-    document.getElementById('sub_total').value = subTotal;
+    document.getElementById('sub_total' + resellerId).value = subTotal;
 }
+
 
 </script>
 
